@@ -9,7 +9,9 @@ use App\Http\Requests\UpdateInvoiceRequest;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\InvoiceResource;
 use App\Filters\V1\InvoicesFilter;
+use App\Http\Requests\BulkStoreInvoiceRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class InvoiceController extends Controller
 {
@@ -33,12 +35,19 @@ class InvoiceController extends Controller
         //
     }
 
+    public function bulkStore(BulkStoreInvoiceRequest $request)
+    {
+        $bulk = collect($request->all())->map(function ($arr, $key) {
+            //this the array without the customerId, billedDate, and paidDate
+            return Arr::except($arr, ['customerId', 'billedDate', 'paidDate']);
+        });
+        return Invoice::insert($bulk->toArray());
+    }
 
     public function store(StoreInvoiceRequest $request)
     {
         return new InvoiceResource(Invoice::create($request->all()));
     }
-
 
     public function show(Invoice $invoice)
     {

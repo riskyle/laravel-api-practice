@@ -21,6 +21,8 @@ class CustomerController extends Controller
     {
         $filter = new CustomersFilter();
 
+
+
         $filterItems = $filter->transform($request); // [['column', 'operator', 'value']]
 
         $includeInvoices = $request->query('includeInvoices');
@@ -43,8 +45,7 @@ class CustomerController extends Controller
 
     public function store(StoreCustomerRequest $request)
     {
-        return $request->all();
-        // return new CustomerResource(Customer::create($request->all()));
+        return new CustomerResource(Customer::create($request->all()));
     }
 
     public function show(Customer $customer)
