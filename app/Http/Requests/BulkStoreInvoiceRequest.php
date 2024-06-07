@@ -41,6 +41,7 @@ class BulkStoreInvoiceRequest extends FormRequest
 
             $data[] = $obj;
         }
+
         $this->merge($data);
     }
 }

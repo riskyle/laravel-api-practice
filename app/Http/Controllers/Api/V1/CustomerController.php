@@ -10,9 +10,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\CustomerCollection;
 use Illuminate\Http\Request;
 use App\Filters\V1\CustomersFilter;
-use App\Http\Resources\V1\InvoiceResource;
-use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
@@ -36,13 +34,6 @@ class CustomerController extends Controller
         return new CustomerCollection($customers->paginate()->appends($request->query()));
     }
 
-
-    public function create()
-    {
-        //
-    }
-
-
     public function store(StoreCustomerRequest $request)
     {
         return new CustomerResource(Customer::create($request->all()));
@@ -58,13 +49,6 @@ class CustomerController extends Controller
         return new CustomerResource($customer);
     }
 
-
-    public function edit(Customer $customer)
-    {
-        //
-    }
-
-
     public function update(UpdateCustomerRequest $request, Customer $customer)
     {
         $customer->update($request->all());
@@ -72,7 +56,14 @@ class CustomerController extends Controller
 
     public function destroy(Customer $customer)
     {
+
+        if (!auth()->user()->tokenCan('delete')) {
+
+            return response()->json(["message" => "You are not allowed to delete data!"]);
+        }
+
         $customer->delete();
-        return Response::json(["message" => "Succesfully Deleted"]);
+
+        return response()->json(["message" => "Succesfully Deleted"]);
     }
 }
